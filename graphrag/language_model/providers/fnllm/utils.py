@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, Dict
 
 from fnllm.base.config import JsonStrategy, RetryStrategy
 from fnllm.openai import AzureOpenAIConfig, OpenAIConfig, PublicOpenAIConfig
@@ -56,6 +56,9 @@ def _create_openai_config(config: LanguageModelConfig, azure: bool) -> OpenAICon
     chat_parameters = OpenAIChatParameters(
         **get_openai_model_parameters_from_config(config)
     )
+    default_headers: Dict[str, str] = {}
+    if config.auth_header and config.auth_key:
+        default_headers[config.auth_header] = config.auth_key
 
     if azure:
         if config.api_base is None:
@@ -81,6 +84,7 @@ def _create_openai_config(config: LanguageModelConfig, azure: bool) -> OpenAICon
             encoding=encoding_model,
             deployment=config.deployment_name,
             chat_parameters=chat_parameters,
+            default_headers=default_headers if default_headers else None,
         )
     return PublicOpenAIConfig(
         api_key=config.api_key,
@@ -97,6 +101,7 @@ def _create_openai_config(config: LanguageModelConfig, azure: bool) -> OpenAICon
         model=config.model,
         encoding=encoding_model,
         chat_parameters=chat_parameters,
+        default_headers=default_headers if default_headers else None,
     )
 
 

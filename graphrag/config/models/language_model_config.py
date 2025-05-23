@@ -3,7 +3,7 @@
 
 """Language model configuration."""
 
-from typing import Literal
+from typing import Literal, Dict
 
 import tiktoken
 from pydantic import BaseModel, Field, model_validator
@@ -26,6 +26,16 @@ class LanguageModelConfig(BaseModel):
     api_key: str | None = Field(
         description="The API key to use for the LLM service.",
         default=language_model_defaults.api_key,
+    )
+    
+    auth_header: str | None = Field(
+        description="Optional custom HTTP header name for LLM authentication/proxy.",
+        default=None,
+    )
+ 
+    auth_key: str | None = Field(
+        description="Optional custom HTTP header value for LLM authentication/proxy.",
+        default=None,
     )
 
     def _validate_api_key(self) -> None:
